@@ -35,6 +35,38 @@ namespace apiArqui2.Controllers
 
         }
 
+
+        [HttpGet("/getHistory")]
+        public string getHistory()
+        {
+            DBManager db = new DBManager();
+            String query = "SELECT text_morse, text_convert, DATE_FORMAT(date_request, \" %d /%m /%Y %h:%i:%S\") as date FROM request_morse_ascii;";
+            DataTable table = db.getTableByQuery(query, "9KWIfwbSFw");
+            if (table == null) return "<table style='with:100%'> </table>";
+
+            String tablehtml = "<table with:'100%'> ";
+            tablehtml += "<tr> "+
+                         "  <th width='50%'>Morse Ingresado</th> " +
+                         "  <th width='35%'>Morse - Ascii</th> " +
+                         "  <th width='15%'>Fecha Ingresado</th> " +
+                         "</tr>";
+
+            foreach (DataRow row in table.Rows)
+            {
+                tablehtml += "<tr> " +
+                         "  <td>"+row[0].ToString()+"</td> " +
+                         "  <td>"+ row[1].ToString() + "</td> " +
+                         "  <td>"+ row[2].ToString() + "</td> " +
+                         "</tr>";
+            }
+            tablehtml += "</table>";
+
+
+            return tablehtml;
+
+        }
+
+
         [HttpPost, Route("/convert_ascii")]
         public ActionResult convertAscii([FromBody] Request request)
         {
