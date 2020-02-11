@@ -46,17 +46,17 @@ namespace apiArqui2.Controllers
 
             String tablehtml = "<table with:'100%'> ";
             tablehtml += "<tr> "+
-                         "  <th width='50%'>Morse Ingresado</th> " +
+                         "  <th width='45%'>Morse Ingresado</th> " +
                          "  <th width='35%'>Morse - Ascii</th> " +
-                         "  <th width='15%'>Fecha Ingresado</th> " +
+                         "  <th width='20%'>Fecha Ingresado</th> " +
                          "</tr>";
 
             foreach (DataRow row in table.Rows)
             {
                 tablehtml += "<tr> " +
-                         "  <td>"+row[0].ToString()+"</td> " +
-                         "  <td>"+ row[1].ToString() + "</td> " +
-                         "  <td>"+ row[2].ToString() + "</td> " +
+                         "  <td align='right'>" + row[0].ToString()+"</td> " +
+                         "  <td align='right'>" + row[1].ToString() + "</td> " +
+                         "  <td align='right'>" + row[2].ToString() + "</td> " +
                          "</tr>";
             }
             tablehtml += "</table>";
