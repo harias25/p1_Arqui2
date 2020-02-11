@@ -54,9 +54,9 @@ namespace apiArqui2.Controllers
             foreach (DataRow row in table.Rows)
             {
                 tablehtml += "<tr> " +
-                         "  <td align='right'>" + row[0].ToString()+"</td> " +
-                         "  <td align='right'>" + row[1].ToString() + "</td> " +
-                         "  <td align='right'>" + row[2].ToString() + "</td> " +
+                         "  <td align='center'>" + row[0].ToString()+"</td> " +
+                         "  <td align='center'>" + row[1].ToString() + "</td> " +
+                         "  <td align='center'>" + row[2].ToString() + "</td> " +
                          "</tr>";
             }
             tablehtml += "</table>";
