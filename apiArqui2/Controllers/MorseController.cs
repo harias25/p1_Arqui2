@@ -46,9 +46,9 @@ namespace apiArqui2.Controllers
 
             String tablehtml = "<table with:'100%'> ";
             tablehtml += "<tr> "+
-                         "  <th width='45%'>Morse Ingresado</th> " +
-                         "  <th width='35%'>Morse - Ascii</th> " +
-                         "  <th width='20%'>Fecha Ingresado</th> " +
+                         "  <th width='45%' align='center'>Morse Ingresado</th> " +
+                         "  <th width='35%' align='center'>Morse - Ascii</th> " +
+                         "  <th width='20%' align='center'>Fecha Ingresado</th> " +
                          "</tr>";
 
             foreach (DataRow row in table.Rows)
