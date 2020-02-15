@@ -20,7 +20,7 @@ public class DBManager
 
     public DBManager()
     {
-        conexionStringMysql = "server=remotemysql.com;port=3306;Database=9KWIfwbSFw;user=9KWIfwbSFw;Password=49RfRzo38o;";
+        conexionStringMysql = "server=mysql;port=3306;Database=arqui2;user=root;Password=Abc123**;";
     }
 
 
@@ -37,7 +37,27 @@ public class DBManager
             if (mysqlcon.State == ConnectionState.Closed)
                 mysqlcon.Open();
         }
-        catch (Exception ex) { }
+        catch (Exception ex) {
+            Console.Write(ex.Message);
+        }
+    }
+
+    public String status()
+    {
+        try
+        {
+            mysqlcon = new MySqlConnection(conexionStringMysql);
+            if (mysqlcon.State == ConnectionState.Closed)
+                mysqlcon.Open();
+
+            mysqlcon.Close();
+            return "true";
+
+        }
+        catch (Exception ex) {
+            Console.Write(ex.Message);
+            return "false";
+        }
     }
 
     private void closeConexionMySQL()
@@ -48,7 +68,9 @@ public class DBManager
             if (mysqlcon.State == ConnectionState.Open)
                 mysqlcon.Close();
         }
-        catch (Exception ex) { }
+        catch (Exception ex) {
+            Console.Write(ex.Message);
+        }
     }
 
     #endregion

@@ -20,18 +20,34 @@ namespace apiArqui2.Controllers
             return "Conversor Morse-Ascii " + DateTime.Now.ToString();
         }
 
-        [HttpGet("/getData")]
+        [HttpGet("/statusDB")]
+        public string statusDB()
+        {
+            DBManager db = new DBManager();
+            return db.status();
+        }
+
+        [HttpGet("/getWord")]
         public string getData()
         {
             DBManager db = new DBManager();
             String query = "SELECT * FROM request_ascii_morse WHERE status = 0 LIMIT 1";
-            DataTable table = db.getTableByQuery(query, "9KWIfwbSFw");
-            if (table == null) return "";
-            if(table.Rows.Count ==0) return "";
-            query = "UPDATE request_ascii_morse SET status = 1 WHERE id = " + table.Rows[0][0].ToString()+";";
-            db.execQuery(query, "9KWIfwbSFw");
+            DataTable table = db.getTableByQuery(query, "arqui2");
 
-            return table.Rows[0][2].ToString();
+            Response response = new Response();
+            response.codigoResultado = -1;
+            response.mensajeResultado = "No hay palabras en cola.";
+
+
+            if (table == null) return "";//return JsonConvert.SerializeObject(response);
+            if (table.Rows.Count == 0) return "";//return JsonConvert.SerializeObject(response);
+            query = "UPDATE request_ascii_morse SET status = 1 WHERE id = " + table.Rows[0][0].ToString() + ";";
+            db.execQuery(query, "arqui2");
+
+            response.codigoResultado = 0;
+            response.mensajeResultado = "Palabra en Cola.";
+            response.palabra = table.Rows[0][1].ToString();
+            return table.Rows[0][1].ToString();//JsonConvert.SerializeObject(response);
 
         }
 
@@ -41,21 +57,21 @@ namespace apiArqui2.Controllers
         {
             DBManager db = new DBManager();
             String query = "SELECT text_morse, text_convert, DATE_FORMAT(date_request, \" %d /%m /%Y %h:%i:%S\") as date FROM request_morse_ascii;";
-            DataTable table = db.getTableByQuery(query, "9KWIfwbSFw");
+            DataTable table = db.getTableByQuery(query, "arqui2");
             if (table == null) return "<table style='with:100%'> </table>";
 
             String tablehtml = "<table with:'100%'> ";
             tablehtml += "<tr> "+
                          "  <th width='45%' align='center'>Morse Ingresado</th> " +
-                         "  <th width='35%' align='center'>Morse - Ascii</th> " +
+                         "  <th width='35%' align='center'>Morse Convertido</th> " +
                          "  <th width='20%' align='center'>Fecha Ingresado</th> " +
                          "</tr>";
 
             foreach (DataRow row in table.Rows)
             {
                 tablehtml += "<tr> " +
-                         "  <td align='center'>" + row[0].ToString()+"</td> " +
-                         "  <td align='center'>" + row[1].ToString() + "</td> " +
+                         "  <td align='center'>" + row[1].ToString()+"</td> " +
+                         "  <td align='center'>" + row[0].ToString() + "</td> " +
                          "  <td align='center'>" + row[2].ToString() + "</td> " +
                          "</tr>";
             }
@@ -67,31 +83,70 @@ namespace apiArqui2.Controllers
         }
 
 
-        [HttpPost, Route("/convert_ascii")]
-        public ActionResult convertAscii([FromBody] Request request)
+        String queryInit = "create table request_ascii_morse( " +
+                           " id INT             NOT NULL AUTO_INCREMENT, " +
+                           " text_ascii VARCHAR(60)     NOT NULL, " +
+                           " text_convert    VARCHAR(256)    NULL, " +
+                           " date_request DATETIME        NOT NULL DEFAULT NOW(), " +
+                           " status BIT             NOT NULL DEFAULT 0, " +
+                           " CONSTRAINT request_ascii_morse_pk PRIMARY KEY(id) " +
+                           " ); " +
+
+                            " create table request_morse_ascii( " +
+                            "    id INT             NOT NULL AUTO_INCREMENT, " +
+                            "    text_morse VARCHAR(256)    NOT NULL, " +
+                            " text_convert    VARCHAR(60) NOT NULL, " +
+                            " date_request    DATETIME NOT NULL DEFAULT NOW(), " +
+                            "    status BIT             NOT NULL DEFAULT 0, " +
+                            "    CONSTRAINT request_morse_ascii_pk PRIMARY KEY(id) " +
+                            "); " +
+
+                            " create table game( "+
+                            "    id INT             NOT NULL AUTO_INCREMENT, " +
+                            "    text_play VARCHAR(10)     NOT NULL, " +
+                            " player          VARCHAR(60)     NOT NULL, " +
+                            " date_request    DATETIME NOT NULL DEFAULT NOW(), " +
+                            "    status BIT             NOT NULL DEFAULT 0, " +
+                            "    score int NOT NULL DEFAULT 0, " +
+                            " CONSTRAINT game_pk PRIMARY KEY(id) " +
+                            " );";
+
+
+        [HttpGet("/init")]
+        public String init()
         {
-
-            if (!ModelState.IsValid)
-            {
-                var message = JsonConvert.SerializeObject(BadRequest(ModelState).Value);
-                return Content("{\"codigoResultado\":-1,\"mensajeResultado\":[" + JsonConvert.SerializeObject(BadRequest(ModelState).Value) + "]}", "application/json");
-            }
-
-            return Content(request.ConvertAscii(), "application/json");
+            DBManager db = new DBManager();
+            db.execQuery(queryInit, "arqui2");
+            return "";
         }
 
-        [HttpPost, Route("/convert_morse")]
-        public ActionResult convertMorse([FromBody] Request request)
+
+        [HttpGet("/addWord")]
+        public ActionResult ingresarPalabra(String word)
         {
+            if(word == null)
+                return Content("{\"codigoResultado\":-1,\"mensajeResultado\":\"Se requiere el parametro de la palabra para poder ingresarla\"", "application/json");
 
-            if (!ModelState.IsValid)
-            {
-                var message = JsonConvert.SerializeObject(BadRequest(ModelState).Value);
-                return Content("{\"codigoResultado\":-1,\"mensajeResultado\":[" + JsonConvert.SerializeObject(BadRequest(ModelState).Value) + "]}", "application/json");
-            }
+            Request request = new Request();
+            request.value = word;
 
-            return Content(request.ConvertMorse(), "application/json");
+            return Content(request.InsertarPalabraCola(), "application/json");
+
         }
+
+        [HttpGet("/addMorse")]
+        public ActionResult ingresarMorse(String word, String morse)
+        {
+            if (word == null || morse == null)
+                return Content("{\"codigoResultado\":-1,\"mensajeResultado\":\"Se requieren los parametros para ingresar la información\"", "application/json");
+
+            Request request = new Request();
+            request.value = word;
+
+            return Content(request.RecibirMorse(morse), "application/json");
+
+        }
+
 
     }
 }

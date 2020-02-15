@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -14,21 +15,28 @@ namespace apiArqui2.Models
             get; set;
         }
 
-
-        public string ConvertAscii()
+        public string RecibirMorse(String morse)
         {
             var decode = "";
             foreach (var code in value.Trim().Replace("   ", " . ").Split(' '))
                 decode +=  MorseCode.Get(code.ToString());
 
-            String query = "INSERT INTO request_morse_ascii(text_morse,text_convert) VALUES('" + value+"','" + decode + "');";
+            String query = "INSERT INTO request_morse_ascii(text_morse,text_convert) VALUES('" + value+"','" + morse.Trim() + "');";
             DBManager db = new DBManager();
-            db.execQuery(query, "9KWIfwbSFw");
+            db.execQuery(query, "arqui2");
 
-            return decode;
+            Response r = new Response();
+            r.codigoResultado = 0;
+            r.mensajeResultado = "Palabra ingresada correctamente en el sistema";
+            r.palabra = decode;
+
+            return value;
         }
 
-        public string ConvertMorse()
+
+
+
+        public string InsertarPalabraCola()
         {
             var decode = "";
             value = value.ToUpper();
@@ -53,9 +61,15 @@ namespace apiArqui2.Models
 
             String query = "INSERT INTO request_ascii_morse(text_ascii,text_convert) VALUES('"+value+"','"+decode+"');";
             DBManager db = new DBManager();
-            db.execQuery(query, "9KWIfwbSFw");
+            db.execQuery(query, "arqui2");
 
-            return decode;
+
+            Response r = new Response();
+            r.codigoResultado = 0;
+            r.mensajeResultado = "Palabra agregada correctamente en la cola";
+            r.palabra = decode;
+
+            return JsonConvert.SerializeObject(r);
 
         }
 
