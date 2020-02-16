@@ -60,7 +60,7 @@ namespace apiArqui2.Controllers
             DataTable table = db.getTableByQuery(query, "arqui2");
             if (table == null) return "<table style='with:100%'> </table>";
 
-            String tablehtml = "<table with:'100%'> ";
+            String tablehtml = "<table style = 'width: 100 %;'> ";
             tablehtml += "<tr> "+
                          "  <th width='45%' align='center'>Morse Ingresado</th> " +
                          "  <th width='35%' align='center'>Morse Convertido</th> " +
@@ -143,8 +143,8 @@ namespace apiArqui2.Controllers
             String query = "SELECT text_play, player, DATE_FORMAT(date_request, \" %d /%m /%Y %h:%i:%S\") as date, score FROM game WHERE status = 1;";
             DataTable table = db.getTableByQuery(query, "arqui2");
             if (table == null) return "<table style='with:100%'> </table>";
-
-            String tablehtml = "<table with:'100%'> ";
+            
+            String tablehtml = "<table style = 'width: 100 %;'> ";
             tablehtml += "<tr> " +
                          "  <th width='25%' align='center'>Jugador</th> " +
                          "  <th width='30%' align='center'>Texto Jugado</th> " +
