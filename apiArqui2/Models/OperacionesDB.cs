@@ -112,6 +112,7 @@ public class DBManager
         catch (Exception ex)
         {
             closeConexionMySQL();
+            Console.Write(ex.Message);
             return false;
         }
     }

@@ -15,6 +15,8 @@ namespace apiArqui2.Models
             get; set;
         }
 
+        public string player { get; set; }
+
         public string RecibirMorse(String morse)
         {
             var decode = "";
@@ -33,6 +35,54 @@ namespace apiArqui2.Models
             return value;
         }
 
+        public string ingresarJuego()
+        {
+            value = value.Trim().ToUpper();
+
+            String temp = value;
+            value = "";
+
+            //validacion de letras
+            foreach (char letra in temp)
+            {
+                String val = MorseCode.GetofValue(letra.ToString());
+                if (val != "")
+                {
+                    if(val!=null)
+                        value += letra;
+                }
+            }
+
+
+            if (value.Length > 10)
+            {
+               value = value.Substring(0, 10);
+            }else if(value.Length < 10)
+            {
+               for(int i=value.Length; i<10; i++)
+               {
+                    Random rnd = new Random();
+                    char randomChar = (char)rnd.Next('A', 'Z');
+                    value +=randomChar;
+               }
+            }
+
+
+
+
+            String query = "INSERT INTO game(text_play,player) VALUES('" + value + "','" + player + "');";
+            DBManager db = new DBManager();
+            db.execQuery(query, "arqui2");
+
+
+            Response r = new Response();
+            r.codigoResultado = 0;
+            r.mensajeResultado = "Jugador "+player +" ingresado correctamente con la palabra "+value;
+            r.palabra = value;
+
+            return JsonConvert.SerializeObject(r);
+
+        }
 
 
 
@@ -103,7 +153,7 @@ namespace apiArqui2.Models
             
         }
 
-        public static string GetofValue(string code)
+        public static string GetofValue(String code)
         {
             try
             {

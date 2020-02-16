@@ -82,35 +82,91 @@ namespace apiArqui2.Controllers
 
         }
 
+        [HttpGet("/newGame")]
+        public ActionResult game(String word, String player)
+        {
+            if (word == null || player == null)
+                return Content("{\"codigoResultado\":-1,\"mensajeResultado\":\"Se requieren los parametros para ingresar la información\"", "application/json");
 
-        String queryInit = "create table request_ascii_morse( " +
-                           " id INT             NOT NULL AUTO_INCREMENT, " +
-                           " text_ascii VARCHAR(60)     NOT NULL, " +
-                           " text_convert    VARCHAR(256)    NULL, " +
-                           " date_request DATETIME        NOT NULL DEFAULT NOW(), " +
-                           " status BIT             NOT NULL DEFAULT 0, " +
-                           " CONSTRAINT request_ascii_morse_pk PRIMARY KEY(id) " +
-                           " ); " +
+            Request request = new Request();
+            request.value = word;
+            request.player = player;
 
-                            " create table request_morse_ascii( " +
-                            "    id INT             NOT NULL AUTO_INCREMENT, " +
-                            "    text_morse VARCHAR(256)    NOT NULL, " +
-                            " text_convert    VARCHAR(60) NOT NULL, " +
-                            " date_request    DATETIME NOT NULL DEFAULT NOW(), " +
-                            "    status BIT             NOT NULL DEFAULT 0, " +
-                            "    CONSTRAINT request_morse_ascii_pk PRIMARY KEY(id) " +
-                            "); " +
+            return Content(request.ingresarJuego(), "application/json");
+        }
 
-                            " create table game( "+
-                            "    id INT             NOT NULL AUTO_INCREMENT, " +
-                            "    text_play VARCHAR(10)     NOT NULL, " +
-                            " player          VARCHAR(60)     NOT NULL, " +
-                            " date_request    DATETIME NOT NULL DEFAULT NOW(), " +
-                            "    status BIT             NOT NULL DEFAULT 0, " +
-                            "    score int NOT NULL DEFAULT 0, " +
-                            " CONSTRAINT game_pk PRIMARY KEY(id) " +
-                            " );";
 
+        [HttpGet("/getGame")]
+        public string getGame()
+        {
+            DBManager db = new DBManager();
+            String query = "SELECT * FROM game WHERE status = 0 LIMIT 1";
+            DataTable table = db.getTableByQuery(query, "arqui2");
+
+            Response response = new Response();
+            response.codigoResultado = -1;
+            response.mensajeResultado = "No hay juegos en cola.";
+
+
+            if (table == null) return "";//return JsonConvert.SerializeObject(response);
+            if (table.Rows.Count == 0) return "";//return JsonConvert.SerializeObject(response);
+            query = "UPDATE game SET status = 1 WHERE id = " + table.Rows[0][0].ToString() + ";";
+          //  db.execQuery(query, "arqui2");
+
+            response.codigoResultado = 0;
+            response.mensajeResultado = "Palabra en Cola.";
+            response.palabra = table.Rows[0][1].ToString();
+            return table.Rows[0][0].ToString()+"|"+table.Rows[0][1].ToString();//JsonConvert.SerializeObject(response);
+
+        }
+
+        [HttpGet("/setScore")]
+        public string score(String id, String score)
+        {
+            if (id == null || score == null)
+                return "Valores no validos";
+
+            String query = "UPDATE game SET score = "+score+", status=1 WHERE id = " +id + ";";
+            DBManager db = new DBManager();
+            bool result = db.execQuery(query, "arqui2");
+            if(result)
+                return "Se actualizo correctamente";
+            else
+                return "No se actualizo ningun registro";
+
+        }
+
+        [HttpGet("/getGames")]
+        public string getGames()
+        {
+            DBManager db = new DBManager();
+            String query = "SELECT text_play, player, DATE_FORMAT(date_request, \" %d /%m /%Y %h:%i:%S\") as date, score FROM game WHERE status = 1;";
+            DataTable table = db.getTableByQuery(query, "arqui2");
+            if (table == null) return "<table style='with:100%'> </table>";
+
+            String tablehtml = "<table with:'100%'> ";
+            tablehtml += "<tr> " +
+                         "  <th width='35%' align='center'>Jugador</th> " +
+                         "  <th width='35%' align='center'>Texto Jugado</th> " +
+                         "  <th width='20%' align='center'>Fecha Ingresado</th> " +
+                         "  <th width='10%' align='center'>Punteo</th> " +
+                         "</tr>";
+
+            foreach (DataRow row in table.Rows)
+            {
+                tablehtml += "<tr> " +
+                         "  <td align='center'>" + row[1].ToString() + "</td> " +
+                         "  <td align='center'>" + row[0].ToString() + "</td> " +
+                         "  <td align='center'>" + row[2].ToString() + "</td> " +
+                         "  <td align='center'>" + row[3].ToString() + "</td> " +
+                         "</tr>";
+            }
+            tablehtml += "</table>";
+
+
+            return tablehtml;
+
+        }
 
         [HttpGet("/init")]
         public String init()
@@ -146,6 +202,36 @@ namespace apiArqui2.Controllers
             return Content(request.RecibirMorse(morse), "application/json");
 
         }
+
+
+        String queryInit = "create table request_ascii_morse( " +
+                          " id INT             NOT NULL AUTO_INCREMENT, " +
+                          " text_ascii VARCHAR(60)     NOT NULL, " +
+                          " text_convert    VARCHAR(256)    NULL, " +
+                          " date_request DATETIME        NOT NULL DEFAULT NOW(), " +
+                          " status BIT             NOT NULL DEFAULT 0, " +
+                          " CONSTRAINT request_ascii_morse_pk PRIMARY KEY(id) " +
+                          " ); " +
+
+                           " create table request_morse_ascii( " +
+                           "    id INT             NOT NULL AUTO_INCREMENT, " +
+                           "    text_morse VARCHAR(256)    NOT NULL, " +
+                           " text_convert    VARCHAR(60) NOT NULL, " +
+                           " date_request    DATETIME NOT NULL DEFAULT NOW(), " +
+                           "    status BIT             NOT NULL DEFAULT 0, " +
+                           "    CONSTRAINT request_morse_ascii_pk PRIMARY KEY(id) " +
+                           "); " +
+
+                           " create table game( " +
+                           "    id INT             NOT NULL AUTO_INCREMENT, " +
+                           "    text_play VARCHAR(10)     NOT NULL, " +
+                           " player          VARCHAR(60)     NOT NULL, " +
+                           " date_request    DATETIME NOT NULL DEFAULT NOW(), " +
+                           "    status BIT             NOT NULL DEFAULT 0, " +
+                           "    score int NOT NULL DEFAULT 0, " +
+                           " CONSTRAINT game_pk PRIMARY KEY(id) " +
+                           " );";
+
 
 
     }
