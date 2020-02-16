@@ -146,10 +146,10 @@ namespace apiArqui2.Controllers
 
             String tablehtml = "<table with:'100%'> ";
             tablehtml += "<tr> " +
-                         "  <th width='35%' align='center'>Jugador</th> " +
-                         "  <th width='35%' align='center'>Texto Jugado</th> " +
-                         "  <th width='20%' align='center'>Fecha Ingresado</th> " +
-                         "  <th width='10%' align='center'>Punteo</th> " +
+                         "  <th width='25%' align='center'>Jugador</th> " +
+                         "  <th width='30%' align='center'>Texto Jugado</th> " +
+                         "  <th width='25%' align='center'>Fecha Ingresado</th> " +
+                         "  <th width='20%' align='center'>Punteo</th> " +
                          "</tr>";
 
             foreach (DataRow row in table.Rows)
