@@ -60,7 +60,7 @@ namespace apiArqui2.Controllers
             DataTable table = db.getTableByQuery(query, "arqui2");
             if (table == null) return "<table style='with:100%'> </table>";
 
-            String tablehtml = "<table style = 'width: 100 %;'> ";
+            String tablehtml = "<table style = 'width: 100%;'> ";
             tablehtml += "<tr> "+
                          "  <th width='45%' align='center'>Morse Ingresado</th> " +
                          "  <th width='35%' align='center'>Morse Convertido</th> " +
@@ -144,7 +144,7 @@ namespace apiArqui2.Controllers
             DataTable table = db.getTableByQuery(query, "arqui2");
             if (table == null) return "<table style='with:100%'> </table>";
             
-            String tablehtml = "<table style = 'width: 100 %;'> ";
+            String tablehtml = "<table style = 'width: 100%;'> ";
             tablehtml += "<tr> " +
                          "  <th width='25%' align='center'>Jugador</th> " +
                          "  <th width='30%' align='center'>Texto Jugado</th> " +
