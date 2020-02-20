@@ -27,7 +27,7 @@ namespace apiArqui2.Models
             }
 
 
-            String query = "INSERT INTO request_morse_ascii(text_morse,text_convert) VALUES('" +morse+"','" + value.Trim() + "');";
+            String query = "INSERT INTO request_morse_ascii(text_morse,text_convert) VALUES('" + value.Trim() + "','" + morse + "');";
             DBManager db = new DBManager();
             db.execQuery(query, "arqui2");
 
