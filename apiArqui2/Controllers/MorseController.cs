@@ -191,15 +191,15 @@ namespace apiArqui2.Controllers
         }
 
         [HttpGet("/addMorse")]
-        public ActionResult ingresarMorse(String word, String morse)
+        public ActionResult ingresarMorse(String word)
         {
-            if (word == null || morse == null)
+            if (word == null)
                 return Content("{\"codigoResultado\":-1,\"mensajeResultado\":\"Se requieren los parametros para ingresar la información\"", "application/json");
 
             Request request = new Request();
             request.value = word;
 
-            return Content(request.RecibirMorse(morse), "application/json");
+            return Content(request.RecibirMorse(), "application/json");
 
         }
 

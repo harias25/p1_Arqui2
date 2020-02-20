@@ -17,20 +17,24 @@ namespace apiArqui2.Models
 
         public string player { get; set; }
 
-        public string RecibirMorse(String morse)
+        public string RecibirMorse()
         {
-            var decode = "";
-            foreach (var code in value.Trim().Replace("   ", " . ").Split(' '))
-                decode +=  MorseCode.Get(code.ToString());
+            String morse = "";
+            for (int i = 0; i < value.Length; i++)
+            {
+                String val = MorseCode.GetofValue(value.Substring(i, 1));
+                morse = morse + " " + val;
+            }
 
-            String query = "INSERT INTO request_morse_ascii(text_morse,text_convert) VALUES('" + value+"','" + morse.Trim() + "');";
+
+            String query = "INSERT INTO request_morse_ascii(text_morse,text_convert) VALUES('" +morse+"','" + value.Trim() + "');";
             DBManager db = new DBManager();
             db.execQuery(query, "arqui2");
 
             Response r = new Response();
             r.codigoResultado = 0;
             r.mensajeResultado = "Palabra ingresada correctamente en el sistema";
-            r.palabra = decode;
+            r.palabra = value;
 
             return value;
         }
